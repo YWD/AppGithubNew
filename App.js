@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
 import {createStackNavigator} from 'react-navigation';
+import Toast, {DURATION} from 'react-native-easy-toast';
 
 import Boy from './js/Boy';
 import Girl from './js/Girl';
@@ -80,9 +81,14 @@ export default class App extends Component<Props> {
                     </TabNavigator.Item>
                 </TabNavigator>*/}
                 {/*<Pages/>*/}
-                <FlatListTest/>
+                <FlatListTest onItemClick={(message)=>this.showToast(message)}/>
+                <Toast ref="toast"/>
             </View>
         );
+    }
+
+    showToast(message) {
+        this.refs.toast.show(message);
     }
 }
 
