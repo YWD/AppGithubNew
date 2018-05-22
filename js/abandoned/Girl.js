@@ -20,7 +20,7 @@ export default class Girl extends Component {
                 navigation.pop();
             }}
         >
-            <Image style={{width:22,height:22}} source={require('../res/images/ic_star.png')}/>
+            <Image style={{width:22,height:22}} source={require('../../res/images/ic_star.png')}/>
         </TouchableOpacity>
     });
 

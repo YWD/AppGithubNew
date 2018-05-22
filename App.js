@@ -6,95 +6,54 @@
 
 import React, {Component} from 'react';
 import {
-    Platform,
     StyleSheet,
-    Text,
-    Image,
-    TouchableOpacity,
     View,
 } from 'react-native';
-import TabNavigator from 'react-native-tab-navigator';
-import {createStackNavigator} from 'react-navigation';
-import Toast, {DURATION} from 'react-native-easy-toast';
-
-import Boy from './js/Boy';
-import Girl from './js/Girl';
-import FlatListTest from "./js/FlatListTest";
+import {createSwitchNavigator, createStackNavigator} from 'react-navigation';
+import WelcomePage from './js/pages/WelcomePage';
+import HomePage from './js/pages/HomePage';
+import CustomKeyPage from "./js/pages/CustomKeyPage";
 
 type Props = {};
 export default class App extends Component<Props> {
     constructor(props) {
         super(props);
-        this.state = {
-            selectedTab: 'popular',
-        }
     }
 
     render() {
-        return (
-            <View style={styles.container}>
-                {/* <TabNavigator>
-                    <TabNavigator.Item
-                        selected={this.state.selectedTab === 'popular'}
-                        selectedTitleStyle={{color: 'red'}}
-                        title="Popular"
-                        renderIcon={() => <Image style={styles.image} source={require('./res/images/ic_polular.png')}/>}
-                        renderSelectedIcon={() => <Image style={[styles.image, {tintColor: 'red'}]}
-                                                         source={require('./res/images/ic_polular.png')}/>}
-                        badgeText="1"
-                        onPress={() => this.setState({selectedTab: 'popular'})}>
-                        <View style={styles.page1}/>
-                    </TabNavigator.Item>
-                    <TabNavigator.Item
-                        selected={this.state.selectedTab === 'trending'}
-                        title="Trending"
-                        selectedTitleStyle={{color: 'yellow'}}
-                        renderIcon={() => <Image style={styles.image}
-                                                 source={require('./res/images/ic_trending.png')}/>}
-                        renderSelectedIcon={() => <Image style={[styles.image, {tintColor: 'yellow'}]}
-                                                         source={require('./res/images/ic_trending.png')}/>}
-                        onPress={() => this.setState({selectedTab: 'trending'})}>
-                        <View style={styles.page2}/>
-                    </TabNavigator.Item>
-                    <TabNavigator.Item
-                        selectedTitleStyle={{color: 'blue'}}
-                        selected={this.state.selectedTab === 'favorite'}
-                        title="Favorite"
-                        renderIcon={() => <Image style={styles.image}
-                                                 source={require('./res/images/ic_favorite.png')}/>}
-                        renderSelectedIcon={() => <Image style={[styles.image, {tintColor: 'blue'}]}
-                                                         source={require('./res/images/ic_favorite.png')}/>}
-                        badgeText="1"
-                        onPress={() => this.setState({selectedTab: 'favorite'})}>
-                        <View style={styles.page3}/>
-                    </TabNavigator.Item>
-                    <TabNavigator.Item
-                        selectedTitleStyle={{color: 'green'}}
-                        selected={this.state.selectedTab === 'mine'}
-                        title="Mine"
-                        renderIcon={() => <Image style={styles.image}
-                                                 source={require('./res/images/ic_my.png')}/>}
-                        renderSelectedIcon={() => <Image style={[styles.image, {tintColor: 'green'}]}
-                                                         source={require('./res/images/ic_my.png')}/>}
-                        onPress={() => this.setState({selectedTab: 'mine'})}>
-                        <View style={styles.page4}/>
-                    </TabNavigator.Item>
-                </TabNavigator>*/}
-                {/*<Pages/>*/}
-                <FlatListTest onItemClick={(message)=>this.showToast(message)}/>
-                <Toast ref="toast"/>
-            </View>
+        return (<Pages/>
+           /* <View style={styles.container}>
+
+            </View>*/
         );
     }
 
-    showToast(message) {
-        this.refs.toast.show(message);
-    }
 }
 
-const Pages = createStackNavigator(
+const MainStack = createStackNavigator(
     {
-        Boy: {
+        Home:{
+            screen: HomePage,
+        },
+        KeyPage:{   //要跳转的页面必须注册，我尼玛
+            screen: CustomKeyPage,
+        }
+    },
+    {
+        headerMode: 'none',
+    }
+);
+
+const Pages = createSwitchNavigator(
+    {
+        Welcome:{
+            screen:WelcomePage,
+        },
+        Main:{
+            screen:MainStack,
+            // mode:'modal'     //may cause one navigator error, 可能是abandon目录里也有创建navigator吧
+        }
+        /*Boy: {
             screen: Boy,
             navigationOptions: {
                 title: 'Boy',
@@ -132,10 +91,10 @@ const Pages = createStackNavigator(
             //         <Image source={require('./res/images/ic_star.png')}/>
             //     </TouchableOpacity>
             // })
-        }
+        }*/
     },
     {
-        initialRouteName: 'Boy',
+        initialRouteName: 'Main',
     }
 );
 
@@ -144,24 +103,4 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F5FCFF',
     },
-    image: {
-        width: 22,
-        height: 22
-    },
-    page1: {
-        flex: 1,
-        backgroundColor: 'red'
-    },
-    page2: {
-        flex: 1,
-        backgroundColor: 'yellow'
-    },
-    page3: {
-        flex: 1,
-        backgroundColor: 'blue'
-    },
-    page4: {
-        flex: 1,
-        backgroundColor: 'green'
-    }
 });

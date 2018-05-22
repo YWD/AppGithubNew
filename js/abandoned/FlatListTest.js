@@ -51,8 +51,8 @@ export default class FlatListTest extends Component {
                          }}
                          ListFooterComponent={() => {
                              return <Image
-                                 style={{width: 500, height: 150, backgroundColor: 'red'}} // uri网络图片，require本地图片
-                                 source={{uri: 'https://images.gr-assets.com/hostedimages/1406479536ra/10555627.gif'}}/>   // android不是gif
+                                 style={{width: 500, height: 150}} // uri网络图片，require本地图片
+                                 source={{uri: 'https://images.gr-assets.com/hostedimages/1406479536ra/10555627.gif'}}/>   // android不是gif，gradle配置fb animated-gif
                          }}
                          refreshControl={
                              <RefreshControl

@@ -1,0 +1,6 @@
+default
+    fontSize:14
+debug
+    Allow-Control-Allow-Origin: *
+error
+    add child YogaNode  -> 检查是否有多余文本
