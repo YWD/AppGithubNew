@@ -51,7 +51,7 @@ const Pages = createSwitchNavigator(
         },
         Main:{
             screen:MainStack,
-            // mode:'modal'     //may cause one navigator error, 可能是abandon目录里也有创建navigator吧
+            mode:'modal'     //may cause one navigator error, 可能是abandon目录里也有创建navigator吧
         }
         /*Boy: {
             screen: Boy,

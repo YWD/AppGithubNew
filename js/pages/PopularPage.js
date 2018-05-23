@@ -1,20 +1,41 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text, FlatList, RefreshControl, Image, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, Text, FlatList, RefreshControl, Image, TouchableOpacity,DeviceEventEmitter} from 'react-native';
 import ScrollableTabView, {ScrollableTabBar} from 'react-native-scrollable-tab-view'
 import HttpUtil from '../utils/HttpUtil';
 import AppHead from "../common/AppHead";
-
+import LocalDataDao from "../expand/dao/LocalDataDao";
+import LanguageDao,{FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
 export default class PopularPage extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            keys: [],
+        };
+        this.localDataDao = new LocalDataDao();
+        // this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key);
+    }
 
     componentDidMount() {
     }
 
-    componentWillUnmount() {
+    componentWillMount() {
+        this.loadKeys();
+        DeviceEventEmitter.addListener('popular_tab_key_change',()=>this.loadKeys())
+    }
+
+    loadKeys() {
+        this.localDataDao.fetch().then(result => {
+            this.setState({
+                keys: JSON.parse(result)
+            })
+        });
     }
 
     render() {
+        if (this.state.keys.length < 1) return null;
         return (<View style={styles.container}>
-            <AppHead title={'标体'}/>
+            <AppHead title={'热门'}/>
             <ScrollableTabView renderTabBar={() => <ScrollableTabBar/>}
                                tabBarActiveTextColor='white'
                                tabBarBackgroundColor='#2196f3'
@@ -22,11 +43,23 @@ export default class PopularPage extends Component {
                                tabBarUnderlineStyle={{backgroundColor: '#e7e7e7', height: 2, flex: 1}}
             >
                 {/*<ProjectInfo tabLabel="java"/>*/}
-                <ProjectInfo tabLabel="java"/>
+                {/*<ProjectInfo tabLabel="java"/>
                 <Text tabLabel="native">tab page 3</Text>
-                <Text tabLabel="double text">tab page 2</Text>
+                <Text tabLabel="double text">tab page 2</Text>*/}
+                {this.renderChildPage()}
             </ScrollableTabView>
         </View>);
+    }
+
+    renderChildPage() {
+        if (this.state.keys.length < 1) return null;
+        let views = [];
+        for (let i = 0; i < this.state.keys.length; i++) {
+            if (this.state.keys[i].checked) {
+                views.push(<ProjectInfo tabLabel={this.state.keys[i].name} key={i}/>);
+            }
+        }
+        return views;
     }
 };
 

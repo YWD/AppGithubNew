@@ -1,16 +1,20 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text, Image,AsyncStorage} from 'react-native';
+import {View, StyleSheet, Text, Image, AsyncStorage,DeviceEventEmitter} from 'react-native';
 import AppHead from "../common/AppHead";
 import ViewUtil from '../utils/ViewUtil';
 import Keys from '../../res/data/keys';
 import CheckBox from 'react-native-check-box'
 
-const CUSTOM_KEY = 'custom_key';
+export const CUSTOM_KEY = 'custom_key';
 
 export default class CustomKeyPage extends Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            datas: [],
+        };
+        this.getKeyData();
     }
 
     componentDidMount() {
@@ -24,22 +28,27 @@ export default class CustomKeyPage extends Component {
     }
 
     getKeyData() {
-        try {
-            this.datas = AsyncStorage.getItem(CUSTOM_KEY).then(result => JSON.parse(result));
-            if (this.datas) {
-                return this.datas;
-            } else {
-                AsyncStorage.setItem(CUSTOM_KEY, JSON.stringify(Keys));
-                this.datas = Keys;
-                return this.datas;
-            }
+        try {   // 异步操作，返回值？，Promise对象用法
+            AsyncStorage.getItem(CUSTOM_KEY).then((result, error) => {
+                if (error || !result) {
+                    this.setState({
+                        datas: Keys
+                    });
+                    AsyncStorage.setItem(CUSTOM_KEY, JSON.stringify(this.state.datas));
+                } else {
+                    this.setState({
+                        datas: JSON.parse(result)
+                    });
+                }
+            });
         } catch (error) {
             // Error saving data
         }
     }
 
     renderKeys() {
-        let keysData = this.getKeyData();
+        if (this.state.datas.length < 1) return;
+        let keysData = this.state.datas;
         let views = [];
         for (let i = 0; i < keysData.length; i += 2) {
             let item;
@@ -61,7 +70,7 @@ export default class CustomKeyPage extends Component {
     renderCheckBox(data) {
         if (data) {
             return <CheckBox
-                style={{flex: 1, padding: 10, }}
+                style={{flex: 1, padding: 10,}}
                 isChecked={data.checked}
                 onClick={() => this.onClickCheckBox(data)}
                 checkedImage={<Image source={require('../../res/images/ic_check_box.png')}/>}
@@ -69,7 +78,7 @@ export default class CustomKeyPage extends Component {
                 leftText={data.name}/>;
         } else {
             return <CheckBox
-                style={{flex: 1, padding: 10, opacity, display:'none'}}
+                style={{flex: 1, padding: 10, opacity, display: 'none'}}
                 onClick={() => this.onClickCheckBox(data)}
                 checkedImage={<Image source={require('../../res/images/ic_check_box.png')}/>}
                 unCheckedImage={<Image source={require('../../res/images/ic_check_box_outline_blank.png')}/>}
@@ -86,7 +95,7 @@ export default class CustomKeyPage extends Component {
                          this.onSave()
                      })}/>
             {this.renderKeys()}
-            <Text style={{fontSize:22}} onPress={this.clearData()}>清除数据</Text>
+            <Text style={{fontSize: 22}} onPress={() => this.clearData()}>清除数据</Text>
         </View>;
     }
 
@@ -95,16 +104,14 @@ export default class CustomKeyPage extends Component {
     }
 
     onSave() {
-        try{
-            AsyncStorage.setItem(CUSTOM_KEY, JSON.stringify(this.datas));
-        } catch (e) {
-        }
+        AsyncStorage.setItem(CUSTOM_KEY, JSON.stringify(this.state.datas));
+        DeviceEventEmitter.emit('popular_tab_key_change');
     }
 
     onClickCheckBox(data) {
-        for(let i = 0; i < this.datas.length; i++){
-            if (this.datas[i] === data) {
-                this.datas[i].checked = !this.datas[i].checked
+        for (let i = 0; i < this.state.datas.length; i++) {
+            if (this.state.datas[i] === data) {
+                this.state.datas[i].checked = !this.state.datas[i].checked
             }
         }
     }
